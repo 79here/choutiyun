@@ -1,0 +1,22 @@
+{
+	"appid": "wx17edcd8b24ab3ff8",
+	"secret": "606416a41793310eafaba7103f9be963",
+	"obs_account": {
+		"access_key_id": "RLVAOMOINL0ZRTH0LQYS",
+		"secret_access_key": "kGDhKTbty2jiisUiAJJ1m6BVaTw4dqV4rkLcQ2BU",
+		"server" : "obs.myhwclouds.com",
+		"signature" : "v4",
+		"region" : "CHINA",
+		"path_style" : true,
+		"is_secure" : true
+	},
+	"session": {
+		"secret": "keyboard cat"
+	},
+	"Redis":  {
+	    "host": "127.0.0.1",
+	    "port": 6379,
+	    "ttl": 300
+	},
+	"disableAuthorize": false
+}

@@ -1,0 +1,25 @@
+{
+  "name": "cty",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.17.1",
+    "body-parser": "^1.18.2",
+    "connect-redis": "^3.3.2",
+    "express": "^4.16.2",
+    "express-fileupload": "^0.3.0",
+    "express-session": "^1.15.6",
+    "log4js": "^1.1.1",
+    "mkdirp": "^0.5.1",
+    "mongoose": "^4.13.5",
+    "random-id": "0.0.2",
+    "rmdir": "^1.2.0",
+    "xml2js": "^0.4.17"
+  }
+}
