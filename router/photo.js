@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const mongoose = require('mongoose');
 const FileCache = require('../fileCache');
+const Utils = require('../utils');
 
 //上传照片
 router.post('/folders/:id/photos', (req, res) => {
@@ -13,11 +14,17 @@ router.post('/folders/:id/photos', (req, res) => {
 
 	console.log("path" + req.session.openid);
 
+	photo.name = mongoose.Types.ObjectId() + photo.name.slice(photo.name.lastIndexOf("."));
+
 	FileCache.get(req.session.openid, folderID, photo.name).then(sourceFile => {
 		photo.mv(sourceFile, function(err) {
 		    if (err){
 		    	return res.status(500).send(err);
 		    }
+
+		    let thumbnaiFile = FileCache.getThumbnai(sourceFile);
+
+		    // Utils.gm(sourceFile, thumbnaiFile);
 
 		    let newPhoto = new Photo({
 				_id: newPhotoID,
@@ -25,6 +32,7 @@ router.post('/folders/:id/photos', (req, res) => {
 				folderID: folderID,
 				uploadTime: new Date(),
 				src: sourceFile.split("public")[1].replace("\\","/"),
+				thumbnai: thumbnaiFile,
 				userOpenid: req.session.openid
 			});
 

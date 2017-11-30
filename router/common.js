@@ -5,11 +5,14 @@ const User = require('../model/user');
 const Utils = require('../utils');
 const Folder = require('../model/folder');
 const Photo = require('../model/photo');
+const log4js = require('log4js');
+const logger = log4js.getLogger();
 
 router.post('/login', (req, res) => {
 	let js_code = req.body.js_code || "013140E71M6GiT1BNuD71aedE71140En";
 	let url = 'https://api.weixin.qq.com/sns/jscode2session?appid=' + config.appid + '&secret=' + config.secret +'&js_code=' + js_code + '&grant_type=authorization_code';
 	
+	logger.info('start login');
 	axios.get(url).then(response => {
 		let session_key = response.data.session_key;
 		let openid = response.data.openid;
@@ -25,33 +28,45 @@ router.post('/login', (req, res) => {
 			User.find({openid: openid}).then(users=>{
 				if( users.length === 0 ){
 					(new User({openid: openid})).save().then(user=>{
+						logger.info('start success openid: ' + openid);
 						res.send(sessionid);
 					});
 				}
 				else{
+					logger.info('start success openid: ' + openid);
 					res.send(sessionid);
 				}
 			});
 		});
         
 	}).catch(error => {
-		console.log(error);
+		logger.error(error);
     	res.status(500).send(error);
   	});
 });
 
+//检查session是否过期
+router.post('/checkSession', (req, res) => {
+	res.send(!!req.session.openid);
+});
+
 router.get("/statistics", (req, res) => {
 	let openid = req.session.openid;
+	
+	logger.info(openid);
 
-	Promise.all(
+	Promise.all([
 		Folder.count({userOpenid: openid}),
 		Photo.count({userOpenid: openid})
-	).then((counts)=>{
+	]).then((counts)=>{
 		res.send({
 			folderCount: counts[0],
 			photoCount: counts[1]
 		});
-	});
+	}).catch(err=>{
+		logger.error(err);
+		res.status(500).send(error);
+	})
 });
 
 module.exports = router;

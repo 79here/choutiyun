@@ -26,6 +26,11 @@ module.exports = {
 		});
   	},
 
+  	getThumbnai: function(sourceFile){
+		let i = sourceFile.lastIndexOf("/");
+		return sourceFile.slice(0,i) + "/thumbnai_" + sourceFile.slice(i+1);
+  	},
+
   	remove: function(openid, folderID, photo){
   		return new Promise((resolve, reject) => {
   			let folderPath = cachePath + "/" + openid + "/" + folderID;

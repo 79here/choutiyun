@@ -46,7 +46,7 @@ router.get('/folders/:id', (req, res) => {
 		}
 		else{
 			//该相册不存在
-			res.status(500).send("该相册不存在");
+			res.send("404");
 		}
 	});
 });

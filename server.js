@@ -10,6 +10,19 @@ const fileUpload = require('express-fileupload');
 const ObsClient = require('./obs/lib/obs');
 const obsExtend = require('./obs/extend');
 const Config = require('./config');
+const log4js = require('log4js');
+
+log4js.configure({
+	appenders: {
+		out:{ type: 'console' },
+		app:{ type: 'file', filename: 'logs/log.log', pattern: "_yyyy-MM-dd", alwaysIncludePattern: false, maxLogSize: 1024*1024*10}
+	},
+	categories: {
+		default: { appenders: [ 'out', 'app' ], level: 'error' }
+	}
+});
+
+const logger = log4js.getLogger();
 
 mongoose.connect('mongodb://localhost/cty');
 mongoose.Promise = Promise;
@@ -29,6 +42,7 @@ obsExtend(global.obs);
 
 Config.session.store = new RedisStore(Config.Redis);
 
+app.use(log4js.connectLogger(logger, {level:'auto', format:':date :method :url :status :response-time'}));  
 app.use(session(Config.session));
 app.use(bodyParser.json());
 app.use(fileUpload());
@@ -40,7 +54,7 @@ app.use("/api", require("./router/folder"));
 app.use("/api", require("./router/photo"));
 
 app.use(function(err, req, res, next) {
-  	console.error(err.stack);
+  	logger.error(err.stack);
   	res.status(500).send('system error');
 });
 
@@ -49,7 +63,7 @@ var SSLPORT = 443;
 
 //创建http服务器  
 httpServer.listen(PORT, function() {  
-    console.log('HTTP Server is running on: http://localhost:%s', PORT);  
+    logger.info('HTTP Server is running on: http://localhost:%s', PORT);  
 });  
   
 //创建https服务器  
@@ -58,5 +72,5 @@ httpServer.listen(PORT, function() {
 // });
 
 process.on('uncaughtException', function (err) {
-    console.error('Caught exception: ', err);
+    logger.error('Caught exception: ', err);
 })

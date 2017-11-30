@@ -6,6 +6,7 @@ const PhotoSchema = new Schema({
 	folderID: Schema.Types.ObjectId,
 	uploadTime: Date,
 	src: String,
+	thumbnai: String,
 	userOpenid: String
 });
 
