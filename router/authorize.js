@@ -8,7 +8,7 @@ router.all('/*', (req, res, next) => {
 		return next();
 	}
 
-	if( req.url.indexOf('login') !== -1 ){
+	if( req.url.indexOf('login') !== -1 || req.url.indexOf("checkSession") != -1 ){
 		next();
 	}
 	else{
