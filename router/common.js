@@ -10,6 +10,8 @@ const logger = log4js.getLogger();
 
 router.post('/login', (req, res) => {
 	let js_code = req.body.js_code || "013140E71M6GiT1BNuD71aedE71140En";
+	let username = req.body.username;
+	let img = req.body.img;
 	let url = 'https://api.weixin.qq.com/sns/jscode2session?appid=' + config.appid + '&secret=' + config.secret +'&js_code=' + js_code + '&grant_type=authorization_code';
 	
 	logger.info('start login');
@@ -25,16 +27,21 @@ router.post('/login', (req, res) => {
 			let sessionid = Utils.signature(req.session);
 
 			//用户不存在,则新建用户
-			User.find({openid: openid}).then(users=>{
-				if( users.length === 0 ){
-					(new User({openid: openid})).save().then(user=>{
+			User.findOne({openid: openid}).then(user=>{
+				if( !user ){
+					(new User({openid:openid, name:username, img:img})).save().then(user=>{
 						logger.info('start success openid: ' + openid);
 						res.send(sessionid);
 					});
 				}
 				else{
-					logger.info('start success openid: ' + openid);
-					res.send(sessionid);
+					user.name = username;
+					user.img = img;
+					user.save().then(()=>{
+						console.log(user);
+						logger.info('start success openid: ' + openid);
+						res.send(sessionid);
+					});
 				}
 			});
 		});

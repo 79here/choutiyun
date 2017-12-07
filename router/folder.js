@@ -11,9 +11,17 @@ router.get('/folders', (req, res) => {
 	
 	UserFolderMap.find({userOpenid:req.session.openid}).then((maps)=>{
 		Promise.all(maps.map(e => Folder.findDetail(e.folderID, req.session.openid))).then(folders => {
+			if( req.query.type === 'share' ){
+				folders = folders.filter((folder) => folder.owner === false);
+			}
+			else if( req.query.type === 'owner' ){
+				folders = folders.filter((folder) => folder.owner === true);
+			}
+
 			if( req.query.name ){
 				folders = folders.filter((folder) => folder.name.indexOf(req.query.name) !== -1);
 			}
+
 			res.send(folders);
 		});
 	});
@@ -75,8 +83,8 @@ router.post('/folders', (req, res) => {
 	let folder = new Folder(req.body);
 	folder.createTime = new Date();
 	folder.userOpenid = req.session.openid;
-	let randomCover = Math.floor(Math.random()*16);
-	folder.cover = '/cover/timg-' + randomCover + '.jpeg';
+	let randomCover = Math.floor(Math.random()*2);
+	folder.cover = '/cover/timg-' + randomCover + '.png';
 	folder.save().then(newFolder => {
 		let userFolderMap = new UserFolderMap({
 			folderID: newFolder._id,
